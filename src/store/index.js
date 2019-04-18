@@ -1,47 +1,47 @@
-import { compose, createStore } from "redux";
-import reducer from "../reducers";
+import {compose, createStore} from "redux";
+import myReducer from "../reducers";
 
-const persistStore = createStore => (reducer, initialState) => {
-  const store = createStore(reducer, initialState);
-  store.subscribe(() => {
-    //get current state
-    const currentState = store.getState();
-    //log to console
-    console.log("saving the current state to localStorage", currentState);
-    //save to local storage
-    localStorage.setItem("@@PersistedState", JSON.stringify(currentState));
-  });
+const persistStore = _createStore => (reducer, initialState) => {
+    const store = _createStore(reducer, initialState);
+    store.subscribe(() => {
+    // get current state
+        const currentState = store.getState();
+        // log to console
+        console.log("saving the current state to localStorage", currentState);
+        // save to local storage
+        localStorage.setItem("@@PersistedState", JSON.stringify(currentState));
+    });
 
-  return store;
+    return store;
 };
 
-const myStoreEnhancer = function(createStore) {
-  return function(reducer, initialState) {
-    const store = createStore(reducer, initialState);
-    const speakingStore = () => {
-      console.log("I am a speaking store");
+const myStoreEnhancer = function(_createStore) {
+    return function(reducer, initialState) {
+        const store = _createStore(reducer, initialState);
+        const speakingStore = () => {
+            console.log("I am a speaking store");
+        };
+        return {
+            ...store,
+            speak: speakingStore
+        };
     };
-    return {
-      ...store,
-      speak: speakingStore
-    };
-  };
 };
 
 const initialState = {
-  name: "Alex Bakery",
-  description: "Software Engineer, Speaker, and Occasional Model",
-  likes: "Cats, Wine, and Black dresses",
-  location: "localhost"
+    name: "Alex Bakery",
+    description: "Software Engineer, Speaker, and Occasional Model",
+    likes: "Cats, Wine, and Black dresses",
+    location: "localhost"
 };
 
 const store = createStore(
-  reducer,
-  initialState,
-  compose(
-    myStoreEnhancer,
-    persistStore
-  )
+    myReducer,
+    initialState,
+    compose(
+        myStoreEnhancer,
+        persistStore
+    )
 );
 
 /**
